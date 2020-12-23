@@ -1,33 +1,61 @@
-import { Component } from 'react';
+import React, { useState } from 'react';
 import Section from './component/Section';
 import Feedback from './component/Feedback';
 import Statistics from './component/Statistics';
 
-class App extends Component {
-  state = {
-    good: 0,
-    neutral: 0,
-    bad: 0,
+function App() {
+  const [good, setGood] = useState(0);
+  const [neutral, setNeutral] = useState(0);
+  const [bad, setBad] = useState(0);
+
+  const feedbackOptions = ['good', 'neutral', 'bad'];
+
+  const hendleIncrement = feedback => {
+    console.log(feedback);
+    switch (feedback) {
+      case 'good':
+        setGood(good + 1);
+        break;
+      case 'neutral':
+        setNeutral(neutral + 1);
+        break;
+      case 'bad':
+        setBad(bad + 1);
+        break;
+      default:
+        return;
+    }
   };
 
-  feedbackOptions = ['good', 'neutral', 'bad'];
-
-  hendleIncrement = feedback => {
-    this.setState(prevState => ({ [feedback]: prevState[feedback] + 1 }));
+  const countTotalFeedback = () => {
+    return good + neutral + bad;
   };
 
-  render() {
-    return (
-      <Section>
-        <Feedback
-          title="Please leave feedback"
-          options={this.feedbackOptions}
-          onLeaveFeedback={this.hendleIncrement}
-        />
+  const countPositiveFeedbackPercentage = () => {
+    const total = countTotalFeedback();
+    return Math.round((good / total) * 100);
+  };
 
-        <Statistics title="Statistics" state={this.state} />
-      </Section>
-    );
-  }
+  const total = countTotalFeedback();
+  const positiveFeedback = countPositiveFeedbackPercentage();
+
+  return (
+    <Section>
+      <Feedback
+        title="Please leave feedback"
+        options={feedbackOptions}
+        onLeaveFeedback={hendleIncrement}
+      />
+
+      <Statistics
+        title="Statistics"
+        good={good}
+        neutral={neutral}
+        bad={bad}
+        total={total}
+        positiveFeedback={positiveFeedback}
+      />
+    </Section>
+  );
 }
 export default App;
